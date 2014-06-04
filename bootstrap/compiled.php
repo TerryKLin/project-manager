@@ -478,7 +478,7 @@ class Application extends Container implements HttpKernelInterface, TerminableIn
     }
     public static function getBootstrapFile()
     {
-        return '/var/www/working/laravel-master/vendor/laravel/framework/src/Illuminate/Foundation' . '/start.php';
+        return '/home/wds/development/project-manager/vendor/laravel/framework/src/Illuminate/Foundation' . '/start.php';
     }
     public function startExceptionHandling()
     {
@@ -10489,7 +10489,7 @@ class PrettyPageHandler extends Handler
                 return str_replace(array('%f', '%l'), array($file, $line), ini_get('xdebug.file_link_format'));
             };
         }
-        $this->searchPaths[] = '/var/www/working/laravel-master/vendor/filp/whoops/src/Whoops/Handler' . '/../Resources';
+        $this->searchPaths[] = '/home/wds/development/project-manager/vendor/filp/whoops/src/Whoops/Handler' . '/../Resources';
     }
     public function handle()
     {
