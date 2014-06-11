@@ -23,8 +23,8 @@ class CreateUsersTable extends Migration {
 	        $table->string('email')->unique();
 	        // Bcrypt hash of the password
 	        $table->string('password');
-	        // Foreign key to Roles table
-	        $table->integer('role_id');
+	        // role in the system
+	        $table->string('role');
 	        // Auth session information
 	        $table->string('remember_token')->nullable();
 	        // Recover token 
