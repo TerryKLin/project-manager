@@ -15,3 +15,15 @@ Route::get('/', function()
 {
 	return View::make('hello');
 });
+
+Route::get('user/create', 'UserController@create');
+
+
+//Authenticated routes
+Route::group(array('before' => 'auth'), function()
+{
+    Route::get('user/profile', function()
+    {
+        // Has Auth Filter
+    });
+});
