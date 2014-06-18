@@ -27,8 +27,6 @@ class CreateUsersTable extends Migration {
 	        $table->string('role');
 	        // Auth session information
 	        $table->string('remember_token')->nullable();
-	        // Recover token 
-	        $table->string('recover_token')->nullable();
 	    });
 	}
 
