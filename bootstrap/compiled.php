@@ -425,7 +425,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Application extends Container implements HttpKernelInterface, TerminableInterface, ResponsePreparerInterface
 {
-    const VERSION = '4.2.1';
+    const VERSION = '4.2.3';
     protected $booted = false;
     protected $bootingCallbacks = array();
     protected $bootedCallbacks = array();
@@ -478,7 +478,7 @@ class Application extends Container implements HttpKernelInterface, TerminableIn
     }
     public static function getBootstrapFile()
     {
-        return '/home/wds/development/project-manager/vendor/laravel/framework/src/Illuminate/Foundation' . '/start.php';
+        return '/Applications/MAMP/htdocs/project-manager/vendor/laravel/framework/src/Illuminate/Foundation' . '/start.php';
     }
     public function startExceptionHandling()
     {
@@ -3064,22 +3064,8 @@ class ExceptionServiceProvider extends ServiceProvider
     {
         $this->app['whoops.handler'] = $this->app->share(function () {
             with($handler = new PrettyPageHandler())->setEditor('sublime');
-            if (!is_null($path = $this->resourcePath())) {
-                $handler->addResourcePath($path);
-            }
             return $handler;
         });
-    }
-    public function resourcePath()
-    {
-        if (is_dir($path = $this->getResourcePath())) {
-            return $path;
-        }
-    }
-    protected function getResourcePath()
-    {
-        $base = $this->app['path.base'];
-        return $base . '/vendor/laravel/framework/src/Illuminate/Exception/resources';
     }
 }
 namespace Illuminate\Routing;
@@ -4572,9 +4558,9 @@ class Router implements HttpKernelInterface, RouteFiltererInterface
     protected function getResourceMethods($defaults, $options)
     {
         if (isset($options['only'])) {
-            return array_intersect($defaults, $options['only']);
+            return array_intersect($defaults, (array) $options['only']);
         } elseif (isset($options['except'])) {
-            return array_diff($defaults, $options['except']);
+            return array_diff($defaults, (array) $options['except']);
         }
         return $defaults;
     }
@@ -5264,7 +5250,7 @@ class Route
     }
     protected function parseAction($action)
     {
-        if ($action instanceof Closure) {
+        if (is_callable($action)) {
             return array('uses' => $action);
         } elseif (!isset($action['uses'])) {
             $action['uses'] = $this->findClosure($action);
@@ -5274,7 +5260,7 @@ class Route
     protected function findClosure(array $action)
     {
         return array_first($action, function ($key, $value) {
-            return $value instanceof Closure;
+            return is_callable($value);
         });
     }
     public static function getValidators()
@@ -5911,10 +5897,11 @@ class Dispatcher
     {
         foreach ((array) $events as $event) {
             if (str_contains($event, '*')) {
-                return $this->setupWildcardListen($event, $listener);
+                $this->setupWildcardListen($event, $listener);
+            } else {
+                $this->listeners[$event][$priority][] = $this->makeListener($listener);
+                unset($this->sorted[$event]);
             }
-            $this->listeners[$event][$priority][] = $this->makeListener($listener);
-            unset($this->sorted[$event]);
         }
     }
     protected function setupWildcardListen($event, $listener)
@@ -6218,6 +6205,12 @@ abstract class Model implements ArrayAccess, ArrayableInterface, JsonableInterfa
             return $instance;
         }
         return new static($attributes);
+    }
+    public static function updateOrCreate(array $attributes, array $values = array())
+    {
+        $instance = static::firstOrNew($attributes);
+        $instance->fill($values)->save();
+        return $instance;
     }
     protected static function firstByAttributes($attributes)
     {
@@ -6534,8 +6527,8 @@ abstract class Model implements ArrayAccess, ArrayableInterface, JsonableInterfa
     }
     protected function finishSave(array $options)
     {
-        $this->syncOriginal();
         $this->fireModelEvent('saved', false);
+        $this->syncOriginal();
         if (array_get($options, 'touch', true)) {
             $this->touchOwners();
         }
@@ -7557,7 +7550,7 @@ class Store implements SessionInterface
     }
     protected function generateSessionId()
     {
-        return sha1(uniqid(true) . str_random(25) . microtime(true));
+        return sha1(uniqid('', true) . str_random(25) . microtime(true));
     }
     public function getName()
     {
@@ -7799,7 +7792,7 @@ class SessionManager extends Manager
     protected function createDatabaseDriver()
     {
         $connection = $this->getDatabaseConnection();
-        $table = $connection->getTablePrefix() . $this->app['config']['session.table'];
+        $table = $this->app['config']['session.table'];
         return $this->buildSession(new DatabaseSessionHandler($connection, $table));
     }
     protected function getDatabaseConnection()
@@ -8074,7 +8067,11 @@ class Encrypter
     }
     protected function mcryptDecrypt($value, $iv)
     {
-        return mcrypt_decrypt($this->cipher, $this->key, $value, $this->mode, $iv);
+        try {
+            return mcrypt_decrypt($this->cipher, $this->key, $value, $this->mode, $iv);
+        } catch (\Exception $e) {
+            throw new DecryptException($e->getMessage());
+        }
     }
     protected function getJsonPayload($payload)
     {
@@ -8350,6 +8347,10 @@ class Logger implements LoggerInterface
         }
         return array_shift($this->handlers);
     }
+    public function getHandlers()
+    {
+        return $this->handlers;
+    }
     public function pushProcessor($callback)
     {
         if (!is_callable($callback)) {
@@ -8363,6 +8364,10 @@ class Logger implements LoggerInterface
             throw new \LogicException('You tried to pop from an empty processor stack.');
         }
         return array_shift($this->processors);
+    }
+    public function getProcessors()
+    {
+        return $this->processors;
     }
     public function addRecord($level, $message, array $context = array())
     {
@@ -8795,16 +8800,23 @@ namespace Illuminate\Exception;
 
 use Exception;
 use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\HttpFoundation\JsonResponse;
 class SymfonyDisplayer implements ExceptionDisplayerInterface
 {
     protected $symfony;
-    public function __construct(ExceptionHandler $symfony)
+    protected $returnJson;
+    public function __construct(ExceptionHandler $symfony, $returnJson = false)
     {
         $this->symfony = $symfony;
+        $this->returnJson = $returnJson;
     }
     public function display(Exception $exception)
     {
-        return $this->symfony->createResponse($exception);
+        if ($this->returnJson) {
+            return new JsonResponse(array('error' => $exception->getMessage(), 'file' => $exception->getFile(), 'line' => $exception->getLine()), 500);
+        } else {
+            return $this->symfony->createResponse($exception);
+        }
     }
 }
 namespace Illuminate\Exception;
@@ -9008,7 +9020,8 @@ interface ViewFinderInterface
 {
     public function find($view);
     public function addLocation($location);
-    public function addNamespace($namespace, $hint);
+    public function addNamespace($namespace, $hints);
+    public function prependNamespace($namespace, $hints);
     public function addExtension($extension);
 }
 namespace Illuminate\View;
@@ -10464,172 +10477,6 @@ abstract class Handler implements HandlerInterface
     protected function getException()
     {
         return $this->exception;
-    }
-}
-namespace Whoops\Handler;
-
-use Whoops\Handler\Handler;
-use Whoops\Util\TemplateHelper;
-use InvalidArgumentException;
-use RuntimeException;
-class PrettyPageHandler extends Handler
-{
-    private $searchPaths = array();
-    private $resourceCache = array();
-    private $customCss = null;
-    private $extraTables = array();
-    private $handleUnconditionally = false;
-    private $pageTitle = 'Whoops! There was an error.';
-    protected $editor;
-    protected $editors = array('sublime' => 'subl://open?url=file://%file&line=%line', 'textmate' => 'txmt://open?url=file://%file&line=%line', 'emacs' => 'emacs://open?url=file://%file&line=%line', 'macvim' => 'mvim://open/?url=file://%file&line=%line');
-    public function __construct()
-    {
-        if (ini_get('xdebug.file_link_format') || extension_loaded('xdebug')) {
-            $this->editors['xdebug'] = function ($file, $line) {
-                return str_replace(array('%f', '%l'), array($file, $line), ini_get('xdebug.file_link_format'));
-            };
-        }
-        $this->searchPaths[] = '/home/wds/development/project-manager/vendor/filp/whoops/src/Whoops/Handler' . '/../Resources';
-    }
-    public function handle()
-    {
-        if (!$this->handleUnconditionally()) {
-            if (php_sapi_name() === 'cli') {
-                if (isset($_ENV['whoops-test'])) {
-                    throw new \Exception('Use handleUnconditionally instead of whoops-test' . ' environment variable');
-                }
-                return Handler::DONE;
-            }
-        }
-        $helper = new TemplateHelper();
-        $templateFile = $this->getResource('views/layout.html.php');
-        $cssFile = $this->getResource('css/whoops.base.css');
-        $zeptoFile = $this->getResource('js/zepto.min.js');
-        $jsFile = $this->getResource('js/whoops.base.js');
-        if ($this->customCss) {
-            $customCssFile = $this->getResource($this->customCss);
-        }
-        $inspector = $this->getInspector();
-        $frames = $inspector->getFrames();
-        $vars = array('page_title' => $this->getPageTitle(), 'stylesheet' => file_get_contents($cssFile), 'zepto' => file_get_contents($zeptoFile), 'javascript' => file_get_contents($jsFile), 'header' => $this->getResource('views/header.html.php'), 'frame_list' => $this->getResource('views/frame_list.html.php'), 'frame_code' => $this->getResource('views/frame_code.html.php'), 'env_details' => $this->getResource('views/env_details.html.php'), 'title' => $this->getPageTitle(), 'name' => explode('\\', $inspector->getExceptionName()), 'message' => $inspector->getException()->getMessage(), 'frames' => $frames, 'has_frames' => !!count($frames), 'handler' => $this, 'handlers' => $this->getRun()->getHandlers(), 'tables' => array('Server/Request Data' => $_SERVER, 'GET Data' => $_GET, 'POST Data' => $_POST, 'Files' => $_FILES, 'Cookies' => $_COOKIE, 'Session' => isset($_SESSION) ? $_SESSION : array(), 'Environment Variables' => $_ENV));
-        if (isset($customCssFile)) {
-            $vars['stylesheet'] .= file_get_contents($customCssFile);
-        }
-        $extraTables = array_map(function ($table) {
-            return $table instanceof \Closure ? $table() : $table;
-        }, $this->getDataTables());
-        $vars['tables'] = array_merge($extraTables, $vars['tables']);
-        $helper->setVariables($vars);
-        $helper->render($templateFile);
-        return Handler::QUIT;
-    }
-    public function addDataTable($label, array $data)
-    {
-        $this->extraTables[$label] = $data;
-    }
-    public function addDataTableCallback($label, $callback)
-    {
-        if (!is_callable($callback)) {
-            throw new InvalidArgumentException('Expecting callback argument to be callable');
-        }
-        $this->extraTables[$label] = function () use($callback) {
-            try {
-                $result = call_user_func($callback);
-                return is_array($result) || $result instanceof \Traversable ? $result : array();
-            } catch (\Exception $e) {
-                return array();
-            }
-        };
-    }
-    public function getDataTables($label = null)
-    {
-        if ($label !== null) {
-            return isset($this->extraTables[$label]) ? $this->extraTables[$label] : array();
-        }
-        return $this->extraTables;
-    }
-    public function handleUnconditionally($value = null)
-    {
-        if (func_num_args() == 0) {
-            return $this->handleUnconditionally;
-        }
-        $this->handleUnconditionally = (bool) $value;
-    }
-    public function addEditor($identifier, $resolver)
-    {
-        $this->editors[$identifier] = $resolver;
-    }
-    public function setEditor($editor)
-    {
-        if (!is_callable($editor) && !isset($this->editors[$editor])) {
-            throw new InvalidArgumentException("Unknown editor identifier: {$editor}. Known editors:" . implode(',', array_keys($this->editors)));
-        }
-        $this->editor = $editor;
-    }
-    public function getEditorHref($filePath, $line)
-    {
-        if ($this->editor === null) {
-            return false;
-        }
-        $editor = $this->editor;
-        if (is_string($editor)) {
-            $editor = $this->editors[$editor];
-        }
-        if (is_callable($editor)) {
-            $editor = call_user_func($editor, $filePath, $line);
-        }
-        if (!is_string($editor)) {
-            throw new InvalidArgumentException(__METHOD__ . ' should always resolve to a string; got something else instead');
-        }
-        $editor = str_replace('%line', rawurlencode($line), $editor);
-        $editor = str_replace('%file', rawurlencode($filePath), $editor);
-        return $editor;
-    }
-    public function setPageTitle($title)
-    {
-        $this->pageTitle = (string) $title;
-    }
-    public function getPageTitle()
-    {
-        return $this->pageTitle;
-    }
-    public function addResourcePath($path)
-    {
-        if (!is_dir($path)) {
-            throw new InvalidArgumentException("'{$path}' is not a valid directory");
-        }
-        array_unshift($this->searchPaths, $path);
-    }
-    public function addCustomCss($name)
-    {
-        $this->customCss = $name;
-    }
-    public function getResourcePaths()
-    {
-        return $this->searchPaths;
-    }
-    protected function getResource($resource)
-    {
-        if (isset($this->resourceCache[$resource])) {
-            return $this->resourceCache[$resource];
-        }
-        foreach ($this->searchPaths as $path) {
-            $fullPath = $path . "/{$resource}";
-            if (is_file($fullPath)) {
-                $this->resourceCache[$resource] = $fullPath;
-                return $fullPath;
-            }
-        }
-        throw new RuntimeException("Could not find resource '{$resource}' in any resource paths." . '(searched: ' . join(', ', $this->searchPaths) . ')');
-    }
-    public function getResourcesPath()
-    {
-        $allPaths = $this->getResourcePaths();
-        return end($allPaths) ?: null;
-    }
-    public function setResourcesPath($resourcesPath)
-    {
-        $this->addResourcePath($resourcesPath);
     }
 }
 namespace Whoops\Handler;
