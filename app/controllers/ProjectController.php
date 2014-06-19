@@ -10,7 +10,10 @@ class ProjectController extends BaseController {
 	 */
 	public function index()
 	{
-		return View::make('project.index');
+		$projects = Project::all();
+
+		return View::make('project.index')
+				->with('projects', $projects);
 	}
 
 	/**
