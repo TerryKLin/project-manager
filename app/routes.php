@@ -11,4 +11,5 @@
 |
 */
 
+Route::resource('users', 'UserController');
 Route::resource("projects","ProjectController");
