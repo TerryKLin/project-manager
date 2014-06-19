@@ -234,16 +234,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v4.2.3",
+            "version": "v4.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "0efc0c962f28c9b5f3ce2da899c7a08a9471b5b1"
+                "reference": "ee370ac91ee0a51303765c870e139b1ecd1e222c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/0efc0c962f28c9b5f3ce2da899c7a08a9471b5b1",
-                "reference": "0efc0c962f28c9b5f3ce2da899c7a08a9471b5b1",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/ee370ac91ee0a51303765c870e139b1ecd1e222c",
+                "reference": "ee370ac91ee0a51303765c870e139b1ecd1e222c",
                 "shasum": ""
             },
             "require": {
@@ -347,7 +347,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2014-06-11 21:33:06"
+            "time": "2014-06-18 05:07:22"
         },
         {
             "name": "monolog/monolog",
@@ -509,16 +509,16 @@
         },
         {
             "name": "patchwork/utf8",
-            "version": "v1.1.23",
+            "version": "v1.1.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nicolas-grekas/Patchwork-UTF8.git",
-                "reference": "c1edbc82aed49ff2bdef0a0f659bf69e3f7b14cc"
+                "reference": "40f552c019956f446553b19f7de2da2f9c74d730"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicolas-grekas/Patchwork-UTF8/zipball/c1edbc82aed49ff2bdef0a0f659bf69e3f7b14cc",
-                "reference": "c1edbc82aed49ff2bdef0a0f659bf69e3f7b14cc",
+                "url": "https://api.github.com/repos/nicolas-grekas/Patchwork-UTF8/zipball/40f552c019956f446553b19f7de2da2f9c74d730",
+                "reference": "40f552c019956f446553b19f7de2da2f9c74d730",
                 "shasum": ""
             },
             "require": {
@@ -556,7 +556,7 @@
                 "utf-8",
                 "utf8"
             ],
-            "time": "2014-05-22 13:59:09"
+            "time": "2014-06-17 08:23:06"
         },
         {
             "name": "phpseclib/phpseclib",
