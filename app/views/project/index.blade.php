@@ -3,8 +3,8 @@
 @section('content')
 	<dl>
 		@foreach ($projects as $project)
-			<dt>{{ $project->name }}</dt>
-			<dd>{{ $project->description }} <small>{{ $project->createdBy() }}</small></dd>
+			<dt>{{ $project->name }} by <small>{{ $project->user->first_name }}</small></dt>
+			<dd>{{ $project->description }}</dd>
 		@endforeach
 	</dl>
 @stop

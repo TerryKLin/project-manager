@@ -3,8 +3,8 @@
 class ProjectController extends BaseController {
 
 	/**
-	 * Display a listing of the resource.
-	 * GET /project
+	 * Display a listing of projects that belong to the Authenticated user.
+	 * GET /projects
 	 *
 	 * @return Response
 	 */
@@ -12,13 +12,12 @@ class ProjectController extends BaseController {
 	{
 		$projects = Project::all();
 
-		return View::make('project.index')
-				->with('projects', $projects);
+		return View::make('project.index', compact('projects'));
 	}
 
 	/**
-	 * Show the form for creating a new resource.
-	 * GET /project/create
+	 * Show the form for creating a new project.
+	 * GET /projects/create
 	 *
 	 * @return Response
 	 */
@@ -28,8 +27,8 @@ class ProjectController extends BaseController {
 	}
 
 	/**
-	 * Store a newly created resource in storage.
-	 * POST /project
+	 * Store a newly created resource in database.
+	 * POST /projects
 	 *
 	 * @return Response
 	 */
@@ -39,8 +38,8 @@ class ProjectController extends BaseController {
 	}
 
 	/**
-	 * Display the specified resource.
-	 * GET /project/{id}
+	 * Display the full information of a project.
+	 * GET /projects/{id}
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -51,8 +50,8 @@ class ProjectController extends BaseController {
 	}
 
 	/**
-	 * Show the form for editing the specified resource.
-	 * GET /project/{id}/edit
+	 * Show the form for editing the specified project.
+	 * GET /projects/{id}/edit
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -63,8 +62,8 @@ class ProjectController extends BaseController {
 	}
 
 	/**
-	 * Update the specified resource in storage.
-	 * PUT /project/{id}
+	 * Update the specified project in database.
+	 * PUT /projects/{id}
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -75,8 +74,8 @@ class ProjectController extends BaseController {
 	}
 
 	/**
-	 * Remove the specified resource from storage.
-	 * DELETE /project/{id}
+	 * Remove the specified project from database.
+	 * DELETE /projects/{id}
 	 *
 	 * @param  int  $id
 	 * @return Response
