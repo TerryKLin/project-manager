@@ -11,4 +11,4 @@
 |
 */
 
-Route::resource("project","ProjectController");
+Route::resource("projects","ProjectController");
