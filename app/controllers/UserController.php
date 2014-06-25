@@ -2,12 +2,24 @@
 
 class UserController extends BaseController {
 
+
+	/*
+	 * Show the login page
+	 *
+	 * @return Response
+	 */
+	public function index()
+	{
+		return View::make('user.index');
+	}
+	
+
 	/**
 	 * Show the form for creating a new resource.
 	 *
 	 * @return Response
 	 */
-	public function create()
+	public function register()
 	{
 		return View::make('user.create');
 	}
@@ -54,10 +66,10 @@ class UserController extends BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function profile($id)
+	public function show($id)
 	{
 		$user = User::find($id);
-		return View::make('users.profile')->with('user', $user);
+		return View::make('user.show', compact('user'));
 	}
 
 	/**

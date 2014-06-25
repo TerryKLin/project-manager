@@ -425,7 +425,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Application extends Container implements HttpKernelInterface, TerminableInterface, ResponsePreparerInterface
 {
-    const VERSION = '4.2.3';
+    const VERSION = '4.2.4';
     protected $booted = false;
     protected $bootingCallbacks = array();
     protected $bootedCallbacks = array();
@@ -3885,7 +3885,7 @@ class FileEnvironmentVariablesLoader implements EnvironmentVariablesLoaderInterf
         if (!$this->files->exists($path = $this->getFile($environment))) {
             return array();
         } else {
-            return $this->files->getRequire($path);
+            return array_dot($this->files->getRequire($path));
         }
     }
     protected function getFile($environment)
@@ -7856,6 +7856,7 @@ abstract class Manager
     {
         $this->app = $app;
     }
+    public abstract function getDefaultDriver();
     public function driver($driver = null)
     {
         $driver = $driver ?: $this->getDefaultDriver();
@@ -9008,10 +9009,13 @@ class EngineResolver
     }
     public function resolve($engine)
     {
-        if (!isset($this->resolved[$engine])) {
-            $this->resolved[$engine] = call_user_func($this->resolvers[$engine]);
+        if (isset($this->resolved[$engine])) {
+            return $this->resolved[$engine];
         }
-        return $this->resolved[$engine];
+        if (isset($this->resolvers[$engine])) {
+            return $this->resolved[$engine] = call_user_func($this->resolvers[$engine]);
+        }
+        throw new \InvalidArgumentException("Engine {$engine} not found.");
     }
 }
 namespace Illuminate\View;

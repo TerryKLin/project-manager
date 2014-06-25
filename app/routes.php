@@ -11,10 +11,14 @@
 |
 */
 
-Route::get('/', function()
-{
-	return View::make('hello');
-});
+Route::get('/', array('uses' => "UserController@index", 'as' => 'home'));
 
-Route::resource('users', 'UserController');
-Route::resource("project","ProjectController");
+Route::get('register', array('uses' => 'UserController@register`','as' => 'register'));
+Route::post('login', array('uses' => 'UserController@login`','as' => 'login'));
+Route::post('logout', array('uses' => 'UserController@logout`','as' => 'logout'));
+Route::resource('user', 'UserController', array('except' => array('create')));
+
+Route::resource("projects","ProjectController");
+
+Route::get('projects/votes', array('uses' => 'ProjectVoteController@index`','as' => 'projects.votes.index'));
+Route::resource("projects.votes","ProjectVoteController", array('only' => array('store', 'destroy')));
