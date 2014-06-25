@@ -2,7 +2,10 @@
 
 class UserController extends BaseController {
 
-
+	public function __construct() {
+    	$this->beforeFilter('csrf', array('on'=>'post'));
+	}
+	
 	/*
 	 * Show the login page
 	 *
@@ -35,7 +38,8 @@ class UserController extends BaseController {
 			'first_name' => 'required',
 			'last_name' => 'required',
 			'email' => 'required|email|unique:user',
-			'password' => 'required'
+			'password' => 'required|confirmed'
+			'password_confirmation' => 'required'
 			'role' => 'required'
 		);
 
@@ -51,7 +55,8 @@ class UserController extends BaseController {
 			$user->first_name = Input::get('first_name');
 			$user->last_name = Input::get('last_name')
 			$user->email = Input::get('email');
-			$user->nerd_level = Input::get('nerd_level');
+			$user->password = Input::get('password');
+
 			$user->save();
 
 			// redirect
