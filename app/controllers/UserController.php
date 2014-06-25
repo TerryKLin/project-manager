@@ -19,7 +19,33 @@ class UserController extends BaseController {
 	 */
 	public function store()
 	{
-		//
+		$rules = array(
+			'first_name' => 'required',
+			'last_name' => 'required',
+			'email' => 'required|email|unique:user',
+			'password' => 'required'
+			'role' => 'required'
+		);
+
+		$validator = Validator::make(Input::all(), $rules);
+		
+		if ($validator->fails()) {
+			return Redirect::to('user/create')
+				->withErrors($validator)
+				->withInput(Input::except('password'));
+		} else {
+			// store
+			$user = new User;
+			$user->first_name = Input::get('first_name');
+			$user->last_name = Input::get('last_name')
+			$user->email = Input::get('email');
+			$user->nerd_level = Input::get('nerd_level');
+			$user->save();
+
+			// redirect
+			Session::flash('message', 'Successfully created user!');
+			return Redirect::to('user/login');
+		}
 	}
 
 	/**
@@ -31,7 +57,7 @@ class UserController extends BaseController {
 	public function profile($id)
 	{
 		$user = User::find($id);
-		return View::make('user.create', array('user' => $user));
+		return View::make('users.profile')->with('user', $user);
 	}
 
 	/**
@@ -62,9 +88,15 @@ class UserController extends BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function remove($id)
+	public function destroy($id)
 	{
-		//
+		// delete
+		$user = User::find($id);
+		$user->delete();
+
+		// redirect
+		Session::flash('message', 'Successfully deleted the user!');
+		return Redirect::to('/');
 	}
 
 	public function login()
