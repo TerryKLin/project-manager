@@ -37,31 +37,30 @@ class UserController extends BaseController {
 		$rules = array(
 			'first_name' => 'required',
 			'last_name' => 'required',
-			'email' => 'required|email|unique:user',
-			'password' => 'required|confirmed'
-			'password_confirmation' => 'required'
-			'role' => 'required'
+			'email' => 'required|email|unique:users',
+			'password' => 'required|confirmed',
+			'password_confirmation' => 'required',
 		);
 
 		$validator = Validator::make(Input::all(), $rules);
 		
-		if ($validator->fails()) {
-			return Redirect::to('user/create')
+		if ($validator->fails()){
+			return Redirect::route('register')
 				->withErrors($validator)
 				->withInput(Input::except('password'));
 		} else {
 			// store
 			$user = new User;
 			$user->first_name = Input::get('first_name');
-			$user->last_name = Input::get('last_name')
+			$user->last_name = Input::get('last_name');
 			$user->email = Input::get('email');
-			$user->password = Input::get('password');
+			$user->password = Hash::make(Input::get('password'));
 
 			$user->save();
 
 			// redirect
 			Session::flash('message', 'Successfully created user!');
-			return Redirect::to('user/login');
+			return Redirect::route('user.index');
 		}
 	}
 
