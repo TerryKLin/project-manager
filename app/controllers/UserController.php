@@ -2,7 +2,10 @@
 
 class UserController extends BaseController {
 
-
+	public function __construct() {
+    	$this->beforeFilter('csrf', array('on'=>'post'));
+	}
+	
 	/*
 	 * Show the login page
 	 *
@@ -31,7 +34,34 @@ class UserController extends BaseController {
 	 */
 	public function store()
 	{
-		//
+		$rules = array(
+			'first_name' => 'required',
+			'last_name' => 'required',
+			'email' => 'required|email|unique:users',
+			'password' => 'required|confirmed',
+			'password_confirmation' => 'required',
+		);
+
+		$validator = Validator::make(Input::all(), $rules);
+		
+		if ($validator->fails()){
+			return Redirect::route('register')
+				->withErrors($validator)
+				->withInput(Input::except('password'));
+		} else {
+			// store
+			$user = new User;
+			$user->first_name = Input::get('first_name');
+			$user->last_name = Input::get('last_name');
+			$user->email = Input::get('email');
+			$user->password = Hash::make(Input::get('password'));
+
+			$user->save();
+
+			// redirect
+			Session::flash('message', 'Successfully created user!');
+			return Redirect::route('user.index');
+		}
 	}
 
 	/**
@@ -76,7 +106,13 @@ class UserController extends BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		// delete
+		$user = User::find($id);
+		$user->delete();
+
+		// redirect
+		Session::flash('message', 'Successfully deleted the user!');
+		return Redirect::to('/');
 	}
 
 	public function login()
