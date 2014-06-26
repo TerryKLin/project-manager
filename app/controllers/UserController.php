@@ -81,11 +81,36 @@ class UserController extends BaseController {
 
 	public function login()
 	{
-		# code...
+		$rules = array(
+			'email'    => 'required|email',
+			'password' => 'required'
+		);
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		if ($validator->fails()) {
+			return Redirect::route('home')
+				->withErrors($validator)
+				->withInput(Input::except('password'));
+		}
+		else {
+			$userdata = array(
+				'email' 	=> Input::get('email'),
+				'password' 	=> Input::get('password')
+			);
+
+			if (Auth::attempt($userdata)){
+				return Redirect::route('projects')->with('message','Login Succeeded');
+			}
+			else {
+				return Redirect::route('home')->with('error', 'Login Failed');
+			}
+		}
 	}
 
 	public function logout()
 	{
-		# code...
+		Auth::logout();
+		return Redirect::route('home');
 	}
 }

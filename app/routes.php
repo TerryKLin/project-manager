@@ -13,12 +13,13 @@
 
 Route::get('/', array('uses' => "UserController@index", 'as' => 'home'));
 
-Route::get('register', array('uses' => 'UserController@register`','as' => 'register'));
-Route::post('login', array('uses' => 'UserController@login`','as' => 'login'));
-Route::post('logout', array('uses' => 'UserController@logout`','as' => 'logout'));
+Route::get('register', array('uses' => 'UserController@register','as' => 'register'));
+Route::post('login', array('uses' => 'UserController@login','as' => 'login'));
+Route::post('logout', array('uses' => 'UserController@logout','as' => 'logout'));
 Route::resource('user', 'UserController', array('except' => array('create')));
 
-Route::resource("projects","ProjectController");
+Route::get("projects",array('uses' => 'ProjectController@index', 'as' => 'projects'));
+Route::resource("project","ProjectController", array('except' => array('index')));
 
-Route::get('projects/votes', array('uses' => 'ProjectVoteController@index`','as' => 'projects.votes.index'));
+Route::get('projects/votes', array('uses' => 'ProjectVoteController@index','as' => 'projects.votes.index'));
 Route::resource("projects.votes","ProjectVoteController", array('only' => array('store', 'destroy')));
