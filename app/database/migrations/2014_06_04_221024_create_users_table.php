@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration {
 	        // Bcrypt hash of the password
 	        $table->string('password');
 	        // role in the system
-	        $table->string('role');
+	        $table->string('role')->default('client');
 	        // Auth session information
 	        $table->string('remember_token')->nullable();
 	    });

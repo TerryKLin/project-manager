@@ -1,17 +1,30 @@
-{{ Form::open(array('action' => 'UserController@store')) }}
-    <h2 class="form-signup-heading">Please Register</h2>
- 
-    <ul>
-        @foreach($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
- 
-    {{ Form::text('first_name', null, array('class'=>'input-block-level', 'placeholder'=>'First Name')) }}
-    {{ Form::text('last_name', null, array('class'=>'input-block-level', 'placeholder'=>'Last Name')) }}
-    {{ Form::text('email', null, array('class'=>'input-block-level', 'placeholder'=>'Email Address')) }}
-    {{ Form::password('password', array('class'=>'input-block-level', 'placeholder'=>'Password')) }}
-    {{ Form::password('password_confirmation', array('class'=>'input-block-level', 'placeholder'=>'Confirm Password')) }}
- 
-    {{ Form::submit('Register', array('class'=>'btn btn-large btn-primary btn-block'))}}
-{{ Form::close() }}
+@extends('layout')
+
+@section('content')    
+    <div class="col-xs-12 col-md-4 col-md-offset-4">
+        <br><br>
+        {{ Form::open(array('route' => 'user.store', 'role' => 'form')) }}
+            <div class="form-group">
+                {{ Form::text('email', null, array('class'=>'form-control text-center', 'placeholder'=>'Email Address')) }}
+            </div>
+            <div class="form-group">
+                {{ Form::password('password', array('class'=>'form-control text-center', 'placeholder'=>'Password')) }}
+            </div>
+            <div class="form-group">
+                {{ Form::password('password_confirmation', array('class'=>'form-control text-center', 'placeholder'=>'Confirm Password')) }}
+            </div>
+
+            <div class="form-group">
+                {{ Form::text('first_name', null, array('class'=>'form-control text-center', 'placeholder'=>'First Name')) }}
+            </div>
+            <div class="form-group">
+                {{ Form::text('last_name', null, array('class'=>'form-control text-center', 'placeholder'=>'Last Name')) }}
+            </div>
+         
+            <button type="submit" class="btn btn-primary col-xs-5">Register</button>
+            <div class="col-xs-2"></div>
+            <a href="{{ route('home') }}" class="btn btn-success col-xs-5">Back</a>
+
+        {{ Form::close() }}    
+    </div>
+@stop
