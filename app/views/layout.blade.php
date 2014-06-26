@@ -21,19 +21,24 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="#">Project Manager</a>
+					<a class="navbar-brand" href="{{ route('home') }}">Project Manager</a>
 				</div>
 				<div class="navbar-collapse collapse">
+					@if ( Auth::check() )
 					<ul class="nav navbar-nav">
-						<li class="active"><a href="#">Home</a></li>
-						<li><a href="#about">About</a></li>
-						<li><a href="#contact">Contact</a></li>
+						<li><a href="#about">Projects</a></li>
+						<li><a href="#contact">Votes</a></li>
 					</ul>
 
 					<!-- User information when logged in -->
-					@if ( Auth::check() )
 						<ul class="nav navbar-nav navbar-right">
-							<li><a href="#">{{ Auth::user()->name }}</a></li>
+							 <li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ Auth::user()->name() }}</a>
+								<ul class="dropdown-menu">
+									<li><a href="{{ route('logout') }}">Logout</a></li>
+								</ul>
+							</li>
+
 						</ul>
 					@endif
 				</div><!--/.nav-collapse -->
@@ -48,9 +53,9 @@
 			@endforeach
 
 			<!-- Messages -->
-			@foreach ($messages->all() as $message)
-				<div class="alert alert-info">{{ $message }}</div>
-			@endforeach
+			@if (Session::has('message'))
+				<div class="alert alert-success">{{ Session::get('message') }}</div>
+			@endif
 
 			<!-- Content -->
 			@yield('content')

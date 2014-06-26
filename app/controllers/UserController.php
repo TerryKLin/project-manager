@@ -13,7 +13,9 @@ class UserController extends BaseController {
 	 */
 	public function index()
 	{
-		return View::make('user.index');
+		if (Auth::check())
+			return Redirect::route('projects');
+		else return View::make('user.index');
 	}
 	
 
@@ -38,8 +40,8 @@ class UserController extends BaseController {
 			'first_name' => 'required',
 			'last_name' => 'required',
 			'email' => 'required|email|unique:users',
-			'password' => 'required|confirmed',
-			'password_confirmation' => 'required',
+			'password' => 'required|confirmed|min:4',
+			'password_confirmation' => 'required|min:4',
 		);
 
 		$validator = Validator::make(Input::all(), $rules);
@@ -59,8 +61,7 @@ class UserController extends BaseController {
 			$user->save();
 
 			// redirect
-			Session::flash('message', 'Successfully created user!');
-			return Redirect::route('user.index');
+			return Redirect::route('user.index')->with('message', 'Successfully created user!');
 		}
 	}
 
@@ -111,10 +112,13 @@ class UserController extends BaseController {
 		$user->delete();
 
 		// redirect
-		Session::flash('message', 'Successfully deleted the user!');
-		return Redirect::to('/');
+		return Redirect::route('home')->with('message', 'Successfully deleted the user!');
 	}
 
+	/**
+	 * Login a user with credentials
+	 * @return [Redirect] redirects based on credentials
+	 */
 	public function login()
 	{
 		$rules = array(
@@ -135,18 +139,25 @@ class UserController extends BaseController {
 				'password' 	=> Input::get('password')
 			);
 
-			if (Auth::attempt($userdata)){
+			$remember_me = Input::get('remember_me');
+
+			if (Auth::attempt($userdata, $remember_me)){
 				return Redirect::route('projects')->with('message','Login Succeeded');
 			}
 			else {
-				return Redirect::route('home')->with('error', 'Login Failed');
+				$errors = array('login' => 'Email or Password are incorrect!');
+				return Redirect::route('home')->withErrors($errors);
 			}
 		}
 	}
 
+	/**
+	 * Logout the current user
+	 * @return [Redirect] Redirects user to home page
+	 */
 	public function logout()
 	{
 		Auth::logout();
-		return Redirect::route('home');
+		return Redirect::route('home')->with('message','Logged Out!');
 	}
 }

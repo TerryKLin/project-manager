@@ -1,17 +1,23 @@
 @extends('layout')
 
 @section('content')
-	{{ HTML::style('css/login-form.css') }}
-	<div class="login-form col-xs-12 col-md-4 col-md-offset-4 text-center">
+	<div class="login-form col-xs-12 col-md-4 col-md-offset-4">
 		<br><br>
 		{{ Form::open(array( 'route' => 'login', 'role' => 'form' )) }}
 			<div class="form-group">
-				<input type="email" class="form-control input-large text-center" placeholder="Email">
+				{{ Form::email('email', null, array('class'=>"form-control text-center", 'placeholder'=>"Email")) }}
 			</div>
 			<div class="form-group">
-				<input type="password" class="form-control input-large text-center" placeholder="Password">
+				{{ Form::password('password', array('class' => "form-control text-center", 'placeholder' => "Password")) }}
 			</div>
-			<button type="submit" class="btn btn-primary btn-large btn-block">Login</button>
+			<div class="checkbox">
+				<label>
+					{{ Form::checkbox('remember_me') }} Remember Me
+				</label>
+			</div>
+			<button type="submit" class="btn btn-primary col-xs-5">Login</button>
+			<div class="col-xs-2"></div>
+			<a href="{{ route('register') }}" class="btn btn-success col-xs-5">Register</a>
 			
 		{{ Form::close() }}	
 	</div>
