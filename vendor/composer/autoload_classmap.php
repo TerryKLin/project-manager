@@ -28,6 +28,7 @@ return array(
     'ClassPreloader\\Parser\\DirVisitor' => $vendorDir . '/classpreloader/classpreloader/src/ClassPreloader/Parser/DirVisitor.php',
     'ClassPreloader\\Parser\\FileVisitor' => $vendorDir . '/classpreloader/classpreloader/src/ClassPreloader/Parser/FileVisitor.php',
     'ClassPreloader\\Parser\\NodeTraverser' => $vendorDir . '/classpreloader/classpreloader/src/ClassPreloader/Parser/NodeTraverser.php',
+    'CreatePasswordRemindersTable' => $baseDir . '/app/database/migrations/2014_06_26_131025_create_password_reminders_table.php',
     'CreateProjectsTable' => $baseDir . '/app/database/migrations/2014_06_13_135127_create_projects_table.php',
     'CreateUsersTable' => $baseDir . '/app/database/migrations/2014_06_04_221024_create_users_table.php',
     'CreateVotesTable' => $baseDir . '/app/database/migrations/2014_06_18_225302_create_Votes_table.php',
