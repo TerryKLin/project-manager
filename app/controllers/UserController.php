@@ -3,7 +3,8 @@
 class UserController extends BaseController {
 
 	public function __construct() {
-    	$this->beforeFilter('csrf', array('on'=>'post'));
+    	$this->beforeFilter('auth', array('only' => array('edit','update','destroy')));
+        $this->beforeFilter('csrf', array('on' => 'post'));
 	}
 	
 	/*
@@ -40,8 +41,8 @@ class UserController extends BaseController {
 			'first_name' => 'required',
 			'last_name' => 'required',
 			'email' => 'required|email|unique:users',
-			'password' => 'required|confirmed|min:4',
-			'password_confirmation' => 'required|min:4',
+			'password' => 'required|confirmed|min:6',
+			'password_confirmation' => 'required',
 		);
 
 		$validator = Validator::make(Input::all(), $rules);
@@ -60,8 +61,11 @@ class UserController extends BaseController {
 
 			$user->save();
 
+			//Login the new user
+			Auth::login($user);
+
 			// redirect
-			return Redirect::route('user.index')->with('message', 'Successfully created user!');
+			return Redirect::route('projects')->with('message','Welcome to the Project Manager!');
 		}
 	}
 
@@ -142,7 +146,7 @@ class UserController extends BaseController {
 			$remember_me = Input::get('remember_me');
 
 			if (Auth::attempt($userdata, $remember_me)){
-				return Redirect::route('projects')->with('message','Login Succeeded');
+				return Redirect::route('projects')->with('message','Welcome Back!');
 			}
 			else {
 				$errors = array('login' => 'Email or Password are incorrect!');
@@ -158,6 +162,6 @@ class UserController extends BaseController {
 	public function logout()
 	{
 		Auth::logout();
-		return Redirect::route('home')->with('message','Logged Out!');
+		return Redirect::route('home')->with('message','Good Bye!');
 	}
 }

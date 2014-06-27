@@ -9,6 +9,7 @@
 			</div>
 			<div class="form-group">
 				{{ Form::password('password', array('class' => "form-control text-center", 'placeholder' => "Password")) }}
+				<a href="{{ url('password/remind') }}">Forgot Password</a>
 			</div>
 			<div class="checkbox">
 				<label>
