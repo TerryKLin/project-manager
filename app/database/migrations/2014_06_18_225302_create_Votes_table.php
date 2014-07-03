@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 class CreateVotesTable extends Migration {
 
@@ -12,10 +12,12 @@ class CreateVotesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('Votes', function(Blueprint $table)
+		Schema::create('votes', function(Blueprint $table)
 		{
 			$table->increments('id');
+			// User who voted
 			$table->integer('user_id');
+			// The project voted for
 			$table->integer('project_id');
 		});
 	}
@@ -28,7 +30,7 @@ class CreateVotesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('Votes');
+		Schema::drop('votes');
 	}
 
 }

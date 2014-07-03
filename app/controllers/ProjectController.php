@@ -3,6 +3,14 @@
 class ProjectController extends BaseController {
 
 	/**
+     * Instantiate a new ProjectController instance.
+     */
+	public function __construct() {
+    	$this->beforeFilter('auth');
+        $this->beforeFilter('csrf', array('on' => 'post'));
+	}
+
+	/**
 	 * Display a listing of projects that belong to the Authenticated user.
 	 * GET /projects
 	 *
@@ -23,7 +31,8 @@ class ProjectController extends BaseController {
 	 */
 	public function create()
 	{
-		return View::make('project.create');
+		$project = new Project;
+		return View::make('project.create', compact('project'));
 	}
 
 	/**

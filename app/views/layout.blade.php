@@ -8,6 +8,10 @@
 		{{ HTML::style('css/bootstrap.min.css') }}
 		{{ HTML::style('css/navbar-fixed-top.css') }}
 
+		<!-- Scripts are placed here -->
+		{{ HTML::script('js/jquery-1.11.1.min.js') }}
+		{{ HTML::script('js/bootstrap.min.js') }}
+
 	</head>
 
 	<body>
@@ -26,8 +30,8 @@
 				<div class="navbar-collapse collapse">
 					@if ( Auth::check() )
 					<ul class="nav navbar-nav">
-						<li><a href="#about">Projects</a></li>
-						<li><a href="#contact">Votes</a></li>
+						<li><a href="{{ route('projects') }}">Projects</a></li>
+						<li><a href="{{ route('projects.votes.index') }}">Votes</a></li>
 					</ul>
 
 					<!-- User information when logged in -->
@@ -47,24 +51,21 @@
 
 		<!-- Container -->
 		<div class="container">
-			<!-- Warning -->
-			@foreach ($errors->all() as $error)
-				<div class="alert alert-danger">{{ $error }}</div>
-			@endforeach
+			<div class="row">
+				<!-- Warning -->
+				@foreach ($errors->all() as $error)
+					<div class="col-xs-12 alert alert-danger">{{ $error }}</div>
+				@endforeach
 
-			<!-- Messages -->
-			@if (Session::has('message'))
-				<div class="alert alert-success">{{ Session::get('message') }}</div>
-			@endif
+				<!-- Messages -->
+				@if (Session::has('message'))
+					<div class="col-xs-12 alert alert-success">{{ Session::get('message') }}</div>
+				@endif
+			</div>
 
 			<!-- Content -->
 			@yield('content')
 
 		</div>
-
-		<!-- Scripts are placed here -->
-		{{ HTML::script('js/jquery-1.11.1.min.js') }}
-		{{ HTML::script('js/bootstrap.min.js') }}
-
 	</body>
 </html>

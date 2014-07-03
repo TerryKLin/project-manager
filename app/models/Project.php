@@ -1,7 +1,9 @@
 <?php
 
 class Project extends Eloquent {
-	protected $fillable = ["name","description","user_id"];
+	protected $fillable = array("name", "description");
+
+	protected $guarded = array("id", "user_id");
 
 	public $timestamps = false;
 	
