@@ -2,6 +2,9 @@
 
 class UserController extends BaseController {
 
+	/**
+     * Instantiate a new UserController instance.
+     */
 	public function __construct() {
     	$this->beforeFilter('auth', array('only' => array('edit','update','destroy')));
         $this->beforeFilter('csrf', array('on' => 'post'));
@@ -37,15 +40,7 @@ class UserController extends BaseController {
 	 */
 	public function store()
 	{
-		$rules = array(
-			'first_name' => 'required',
-			'last_name' => 'required',
-			'email' => 'required|email|unique:users',
-			'password' => 'required|confirmed|min:6',
-			'password_confirmation' => 'required',
-		);
-
-		$validator = Validator::make(Input::all(), $rules);
+		$validator = Validator::make(Input::all(), User::$registration_rules);
 		
 		if ($validator->fails()){
 			return Redirect::route('register')
@@ -125,12 +120,7 @@ class UserController extends BaseController {
 	 */
 	public function login()
 	{
-		$rules = array(
-			'email'    => 'required|email',
-			'password' => 'required'
-		);
-
-		$validator = Validator::make(Input::all(), $rules);
+		$validator = Validator::make(Input::all(), User::$login_rules);
 
 		if ($validator->fails()) {
 			return Redirect::route('home')

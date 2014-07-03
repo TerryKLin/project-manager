@@ -1,5 +1,13 @@
 @extends('layout')
 
 @section('content')
-    create new project !!!
+	<div class="row">
+		<h1>Project</h1>
+		
+	    {{ Form::open(array('route' => 'project.create')) }}
+	    	@include('project._form', compact('project'))
+
+  			{{ Form::submit("Save", array('class'=>'btn btn-primary')) }}
+	    {{ Form::close() }}
+	</div>
 @stop

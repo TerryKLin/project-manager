@@ -1,11 +1,6 @@
 <?php
 
-class Vote extends \Eloquent {
-
-	// Add your validation rules here
-	public static $rules = [
-		// 'title' => 'required'
-	];
+class Vote extends Eloquent {
 
 	// Mass Assignment
 	protected $fillable = ['project_id','user_id'];
