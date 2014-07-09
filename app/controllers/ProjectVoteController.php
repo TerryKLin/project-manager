@@ -3,14 +3,6 @@
 class ProjectVoteController extends BaseController {
 
 	/**
-     * Instantiate a new ProjectVoteController instance.
-     */
-	public function __construct() {
-    	$this->beforeFilter('auth');
-        $this->beforeFilter('csrf', array('on' => 'post'));
-	}
-
-	/**
 	 * Display a listing of projects and their votes
 	 *
 	 * @return Response
