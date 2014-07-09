@@ -1,6 +1,15 @@
 <?php
 
 class Project extends Eloquent {
+
+	public static $create_rules = array(
+		'name' => 'required|unique:projects'
+	);
+
+	public static $edit_rules = array(
+		'name' => 'required'
+	);
+
 	protected $fillable = array("name", "description");
 
 	protected $guarded = array("id", "user_id");

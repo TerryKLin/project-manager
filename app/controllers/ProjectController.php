@@ -3,14 +3,6 @@
 class ProjectController extends BaseController {
 
 	/**
-     * Instantiate a new ProjectController instance.
-     */
-	public function __construct() {
-    	$this->beforeFilter('auth');
-        $this->beforeFilter('csrf', array('on' => 'post'));
-	}
-
-	/**
 	 * Display a listing of projects that belong to the Authenticated user.
 	 * GET /projects
 	 *
@@ -25,7 +17,7 @@ class ProjectController extends BaseController {
 
 	/**
 	 * Show the form for creating a new project.
-	 * GET /projects/create
+	 * GET /project/create
 	 *
 	 * @return Response
 	 */
@@ -37,54 +29,93 @@ class ProjectController extends BaseController {
 
 	/**
 	 * Store a newly created resource in database.
-	 * POST /projects
+	 * POST /project
 	 *
 	 * @return Response
 	 */
 	public function store()
 	{
-		//
+		$validator = Validator::make(Input::all(), Project::$create_rules);
+
+		if ($validator->fails()){
+			//Redirect
+			return Redirect::back()
+				->withErrors($validator)
+				->withInput(Input::all());
+		}
+		else {
+			//Store
+			$project = new Project;
+			$project->name = Input::get("name");
+			$project->description = Input::get("description");
+			$project->user_id = Auth::user()->id;
+
+			$project->save();
+
+			return Redirect::route('projects')
+				->with('message', "Project was created successfuly!");
+		}
 	}
 
 	/**
 	 * Display the full information of a project.
-	 * GET /projects/{id}
+	 * GET /project/{id}
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function show($id)
 	{
-		return View::make('project.show');
+		$project = Project::find($id);
+		return View::make('project.show', compact('project'));
 	}
 
 	/**
 	 * Show the form for editing the specified project.
-	 * GET /projects/{id}/edit
+	 * GET /project/{id}/edit
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function edit($id)
 	{
-		return View::make('project.edit');
+		$project = Project::find($id);
+		return View::make('project.edit', compact('project'));
 	}
 
 	/**
 	 * Update the specified project in database.
-	 * PUT /projects/{id}
+	 * PUT /project/{id}
 	 *
 	 * @param  int  $id
 	 * @return Response
 	 */
 	public function update($id)
 	{
-		//
+		$validator = Validator::make(Input::all(), Project::$edit_rules);
+
+		if ($validator->fails()){
+			//Redirect
+			return Redirect::back()
+				->withErrors($validator)
+				->withInput(Input::all());
+		}
+		else {
+			//Update
+			$project = Project::find($id);
+			$project->name = Input::get("name");
+			$project->description = Input::get("description");
+
+			$project->save();
+
+			return Redirect::route('project.show',$project->id)
+				->with('message', 'Project has been updated!');
+		}
 	}
 
 	/**
 	 * Remove the specified project from database.
-	 * DELETE /projects/{id}
+	 * DELETE /project/{id}
 	 *
 	 * @param  int  $id
 	 * @return Response
@@ -93,5 +124,4 @@ class ProjectController extends BaseController {
 	{
 		//
 	}
-
 }

@@ -1,5 +1,9 @@
 @extends('layout')
 
+@section('title')
+    Registration
+@stop
+
 @section('content')    
     <div class="col-xs-12 col-md-4 col-md-offset-4">
         <br><br>
