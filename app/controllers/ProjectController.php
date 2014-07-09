@@ -10,7 +10,7 @@ class ProjectController extends BaseController {
 	 */
 	public function index()
 	{
-		$projects = Project::all();
+		$projects = Auth::user()->projects;
 
 		return View::make('project.index', compact('projects'));
 	}
@@ -123,6 +123,6 @@ class ProjectController extends BaseController {
 	 */
 	public function destroy($id)
 	{
-		//
+		Project::destroy($id);
 	}
 }
