@@ -13,7 +13,7 @@
 
 App::before(function($request)
 {
-	//
+	//	
 });
 
 
@@ -88,3 +88,34 @@ Route::filter('csrf', function()
 		throw new Illuminate\Session\TokenMismatchException;
 	}
 });
+
+/*
+|--------------------------------------------------------------------------
+| XSS Protection Filter
+|--------------------------------------------------------------------------
+|
+| The XSS filter is responsible for protecting your application against
+| cross-site scripting attacks. It removes all html tags from input
+| provided by users.
+|
+*/
+
+Route::filter('xss', function()
+{
+	Input::merge(array_strip_tags(Input::all()));
+});
+
+function array_strip_tags($array)
+{
+    $result = array();
+    foreach ($array as $key => $value) {
+        $key = strip_tags($key);
+        if (is_array($value)) {
+            $result[$key] = array_strip_tags($value);
+        }
+        else {
+            $result[$key] = strip_tags($value);
+        }
+    }
+    return $result;
+}
