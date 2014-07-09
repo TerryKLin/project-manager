@@ -35,7 +35,7 @@ class ProjectController extends BaseController {
 	 */
 	public function store()
 	{
-		$validator = Validator::make(Input::all(), Project::$create_rules);
+		$validator = Validator::make(Input::all(), Project::$rules);
 
 		if ($validator->fails()){
 			//Redirect
@@ -92,25 +92,26 @@ class ProjectController extends BaseController {
 	 */
 	public function update($id)
 	{
-		$validator = Validator::make(Input::all(), Project::$edit_rules);
+		$project = Project::find($id);
 
-		if ($validator->fails()){
-			//Redirect
-			return Redirect::back()
-				->withErrors($validator)
-				->withInput(Input::all());
+		if ($project->name != Input::get("name")){
+			$validator = Validator::make(Input::all(), Project::$rules);
+			if ($validator->fails()){
+				//Redirect
+				return Redirect::back()
+					->withErrors($validator)
+					->withInput(Input::except('name'));
+			}
 		}
-		else {
-			//Update
-			$project = Project::find($id);
-			$project->name = Input::get("name");
-			$project->description = Input::get("description");
 
-			$project->save();
+		//Update
+		$project->name = Input::get("name");
+		$project->description = Input::get("description");
 
-			return Redirect::route('project.show',$project->id)
-				->with('message', 'Project has been updated!');
-		}
+		$project->save();
+
+		return Redirect::route('project.show',$project->id)
+			->with('message', 'Project has been updated!');
 	}
 
 	/**
