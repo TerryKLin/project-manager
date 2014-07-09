@@ -2,12 +2,8 @@
 
 class Project extends Eloquent {
 
-	public static $create_rules = array(
+	public static $rules = array(
 		'name' => 'required|unique:projects'
-	);
-
-	public static $edit_rules = array(
-		'name' => 'required'
 	);
 
 	protected $fillable = array("name", "description");
